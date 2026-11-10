@@ -1,0 +1,56 @@
+{
+  "games": [
+    {
+      "id": "game-warzone-echo",
+      "name": "Warzone Echo",
+      "genre": "Action",
+      "platform": "PC · Windows",
+      "description": "A tactical action shooter with fast movement, sharp gunplay, and a high-energy campaign.",
+      "symbol": "✦",
+      "colors": "#ff8a5b, #7a3ef2, #1c1d2d",
+      "downloadUrl": "https://example.com/download/warzone-echo",
+      "downloadLabel": "Download installer"
+    },
+    {
+      "id": "game-neon-rift",
+      "name": "Neon Rift",
+      "genre": "Adventure",
+      "platform": "PC · Windows",
+      "description": "An atmospheric sci-fi adventure built around mystery, exploration, and big worldbuilding.",
+      "symbol": "✧",
+      "colors": "#47d1ff, #6b63ff, #0b1628",
+      "downloadUrl": "https://example.com/download/neon-rift",
+      "downloadLabel": "Download game"
+    },
+    {
+      "id": "game-meadow-quest",
+      "name": "Meadow Quest",
+      "genre": "Cozy",
+      "platform": "PC · Steam",
+      "description": "A relaxing farming and crafting adventure focused on building a life, one quiet day at a time.",
+      "symbol": "✿",
+      "colors": "#f7d97d, #78b96d, #233d33",
+      "downloadUrl": "https://example.com/download/meadow-quest",
+      "downloadLabel": "Download build"
+    }
+  ],
+  "articles": [
+    {
+      "id": "article-first-game",
+      "title": "Why tactical action games still feel good",
+      "game": "Warzone Echo",
+      "author": "ActionGames team",
+      "excerpt": "Fast movement, smart decisions, and clean combat make tactical shooters feel rewarding over and over again.",
+      "body": "Some games feel fun because they are loud. Others feel fun because they reward skill. Warzone Echo sits in the second camp. One of its strongest qualities is how cleanly it teaches the player to move, aim, and adapt.\n\nEvery encounter feels readable, and every victory feels earned. That is what makes players keep coming back.\n\nThe lesson is simple: good action design does not need chaos to feel exciting. It needs control, feedback, and meaningful decisions.",
+      "date": "2026-11-10"
+    },
+    {
+      "id": "article-second-game",
+      "title": "A cozy adventure that rewards slower play",
+      "game": "Meadow Quest",
+      "author": "ActionGames team",
+      "excerpt": "Cozy games become memorable when they give players room to breathe, build, and return to a place they love.",
+      "body": "Cozy games often win through tone rather than spectacle. Meadow Quest is built around a simple promise: you are allowed to slow down.\n\nThat is a big part of its charm. Each day brings small goals, quiet victories, and a sense that the world is alive in ways that are easy to notice.\n\nWhen a game respects the pace of the player, it becomes more than a checklist of tasks. It becomes a place to return to."
+    }
+  ]
+}
