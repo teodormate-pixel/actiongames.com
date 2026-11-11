@@ -34,12 +34,12 @@ drop policy if exists "Public can read games" on public.games;
 create policy "Public can read games" on public.games for select to anon, authenticated using (true);
 drop policy if exists "Admin manages games" on public.games;
 create policy "Admin manages games" on public.games for all to authenticated
-  using ((auth.jwt() ->> 'email') = 'admin@example.com')
-  with check ((auth.jwt() ->> 'email') = 'admin@example.com');
+  using ((auth.jwt() ->> 'email') = 'teodor.mate@gamil.com')
+  with check ((auth.jwt() ->> 'email') = 'teodor.mate@gmail.com');
 
 drop policy if exists "Public can read articles" on public.articles;
 create policy "Public can read articles" on public.articles for select to anon, authenticated using (true);
 drop policy if exists "Admin manages articles" on public.articles;
 create policy "Admin manages articles" on public.articles for all to authenticated
-  using ((auth.jwt() ->> 'email') = 'admin@example.com')
-  with check ((auth.jwt() ->> 'email') = 'admin@example.com');
+  using ((auth.jwt() ->> 'email') = 'teodor.mate@gmail.com')
+  with check ((auth.jwt() ->> 'email') = 'teodor.mate@gmail.com');
