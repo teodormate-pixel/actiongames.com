@@ -22,7 +22,7 @@
     <section class="panel login" id="loginPanel">
       <h2>Sign in</h2><p class="intro">Use the administrator account configured in Supabase.</p>
       <form id="loginForm"><div class="field"><label for="email">Email</label><input id="email" name="email" type="email" autocomplete="username" required></div><div class="field"><label for="password">Password</label><input id="password" name="password" type="password" autocomplete="current-password" required></div><button class="button" type="submit">Sign in</button></form>
-      <div class="notice" id="loginMessage" role="status">Set your Supabase project URL and anon key in this file before signing in.</div>
+      <div class="notice" id="loginMessage" role="status">Supabase connection is configured. Sign in with your admin account.</div>
     </section>
     <section id="dashboard" class="hidden">
       <div class="toolbar"><div class="tabs" role="tablist"><button class="tab active" data-kind="games" type="button">Games</button><button class="tab" data-kind="articles" type="button">Articles</button></div><div class="actions"><span class="status" id="signedInAs"></span><button class="button secondary" id="signOut" type="button">Sign out</button></div></div>
@@ -57,11 +57,10 @@
   </main>
   <footer class="shell">ActionGames admin · Keep your Supabase service-role key private; this page uses only the public anon key.</footer>
 <script>
-  // Replace these with the Project URL and anon/public key from Supabase Settings → API.
-  const SUPABASE_URL = 'https://YOUR_PROJECT_ID.supabase.co';
-  const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
-  const configured = !SUPABASE_URL.includes('YOUR_PROJECT_ID') && !SUPABASE_ANON_KEY.includes('YOUR_SUPABASE_ANON_KEY');
-  const client = configured && window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+  // Public anon key is intended for browser use. Never put a service-role key here.
+  const SUPABASE_URL = 'https://mkxxuobxmvznqowzwpme.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1reHh1b2J4bXZ6bnFvd3p3cG1lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ0MTMzNzgsImV4cCI6MjEwOTk4OTM3OH0.34wA9vx6zYDdj0xm7yNXXGGcdUmDj43uUwM8Q_Wg2Jk';
+  const client = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
   const state = { kind: 'games', records: [] };
   const $ = (id) => document.getElementById(id);
   const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -80,7 +79,7 @@
     state.records=data||[];
     $('records').innerHTML=state.records.length?state.records.map(r=>`<div class="record"><div><strong>${escapeHtml(state.kind==='games'?r.name:r.title)}</strong><small>${escapeHtml(state.kind==='games'?(r.genre||'Game'):(r.game||r.author||'Article'))}</small></div><div class="record-actions"><button class="button secondary" type="button" data-edit="${escapeHtml(r.id)}">Edit</button><button class="button danger" type="button" data-delete="${escapeHtml(r.id)}">Delete</button></div></div>`).join(''):'<p class="empty">No records yet. Add one using the form.</p>';
   }
-  $('loginForm').addEventListener('submit',async e=>{e.preventDefault();if(!client){message('Configure SUPABASE_URL and SUPABASE_ANON_KEY in admin.html first.',true,true);return}const f=new FormData(e.currentTarget);message('Signing in…');const {error}=await client.auth.signInWithPassword({email:f.get('email'),password:f.get('password')});if(error){message(error.message,true,true);return}await showDashboard()});
+  $('loginForm').addEventListener('submit',async e=>{e.preventDefault();if(!client){message('Could not load Supabase client. Refresh the page and try again.',true,true);return}const f=new FormData(e.currentTarget);message('Signing in…');const {error}=await client.auth.signInWithPassword({email:f.get('email'),password:f.get('password')});if(error){message(error.message,true,true);return}await showDashboard()});
   async function showDashboard(){const {data:{user}}=await client.auth.getUser();if(!user)return;$('loginPanel').classList.add('hidden');$('dashboard').classList.remove('hidden');$('signedInAs').textContent=user.email||'Signed in';loadRecords()}
   $('signOut').addEventListener('click',async()=>{await client.auth.signOut();$('dashboard').classList.add('hidden');$('loginPanel').classList.remove('hidden');$('loginForm').reset()});
   document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>setKind(b.dataset.kind)));
