@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10110f">
+  <meta name="description" content="Manage ActionGames collection with Supabase.">
+  <title>Admin — ActionGames</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root{color-scheme:dark;--bg:#10110f;--surface:#181a17;--text:#f4f3ec;--muted:#a3a59b;--lime:#c8f169;--line:rgba(255,255,255,.1);--red:#ff8c7a;--display:'Space Grotesk',sans-serif;--body:'DM Sans',sans-serif}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px var(--body);min-height:100vh}button,input,textarea,select{font:inherit}button{cursor:pointer}.shell{width:min(1080px,calc(100% - 40px));margin:auto}.topbar{border-bottom:1px solid var(--line);height:72px;display:flex;align-items:center}.nav{display:flex;justify-content:space-between;align-items:center}.brand{font:700 20px var(--display);color:var(--text);text-decoration:none}.brand-icon{color:var(--lime);margin-right:8px}.quiet{color:var(--muted);text-decoration:none}.quiet:hover{color:var(--lime)}main{padding:52px 0 80px}.eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.16em;color:var(--lime);font-weight:700}h1,h2,h3{font-family:var(--display)}h1{font-size:clamp(34px,6vw,54px);line-height:1.04;margin:10px 0}h2{font-size:24px;margin:0}.intro{color:var(--muted);margin:0 0 30px}.panel{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:24px;margin:22px 0}.login{max-width:460px;margin:40px auto}.field{display:grid;gap:7px;margin:16px 0}.field label{font-size:13px;font-weight:600}.field input,.field textarea,.field select{width:100%;padding:12px 13px;border-radius:9px;border:1px solid var(--line);background:#10110f;color:var(--text);outline:none}.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--lime)}textarea{min-height:110px;resize:vertical}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 16px}.wide{grid-column:1/-1}.button{border:0;border-radius:999px;background:var(--lime);color:#171a11;font-weight:700;padding:11px 18px}.button:hover{filter:brightness(1.08)}.button.secondary{color:var(--text);background:transparent;border:1px solid var(--line)}.button.danger{color:var(--red);background:transparent;border:1px solid rgba(255,140,122,.35);padding:8px 13px}.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.notice{padding:12px 14px;border:1px solid var(--line);border-radius:10px;color:var(--muted);margin:14px 0}.notice.error{color:var(--red);border-color:rgba(255,140,122,.35)}.toolbar{display:flex;justify-content:space-between;gap:15px;align-items:center;margin-bottom:18px}.tabs{display:flex;gap:8px}.tab{border:1px solid var(--line);color:var(--muted);background:transparent;border-radius:999px;padding:9px 14px}.tab.active{color:var(--lime);border-color:var(--lime)}.record{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:15px 0;border-top:1px solid var(--line)}.record:first-child{border-top:0}.record strong{display:block}.record small{color:var(--muted);display:block;margin-top:4px}.record-actions{display:flex;gap:8px;flex-shrink:0}.empty{color:var(--muted);padding:16px 0}.hidden{display:none!important}.status{font-size:13px;color:var(--muted)}footer{color:var(--muted);font-size:13px;padding:0 0 30px}@media(max-width:620px){.shell{width:calc(100% - 30px)}main{padding-top:36px}.panel{padding:18px}.grid{grid-template-columns:1fr}.wide{grid-column:auto}.toolbar{align-items:flex-start;flex-direction:column}.record{align-items:flex-start}.record-actions{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <header class="topbar"><div class="shell nav"><a class="brand" href="index.html"><span class="brand-icon">▶</span>ActionGames</a><a class="quiet" href="index.html">← Back to site</a></div></header>
+  <main class="shell">
+    <div class="eyebrow">Content management</div><h1>Admin dashboard</h1><p class="intro">Manage the games and articles in your Supabase project.</p>
+    <section class="panel login" id="loginPanel">
+      <h2>Sign in</h2><p class="intro">Use the administrator account configured in Supabase.</p>
+      <form id="loginForm"><div class="field"><label for="email">Email</label><input id="email" name="email" type="email" autocomplete="username" required></div><div class="field"><label for="password">Password</label><input id="password" name="password" type="password" autocomplete="current-password" required></div><button class="button" type="submit">Sign in</button></form>
+      <div class="notice" id="loginMessage" role="status">Set your Supabase project URL and anon key in this file before signing in.</div>
+    </section>
+    <section id="dashboard" class="hidden">
+      <div class="toolbar"><div class="tabs" role="tablist"><button class="tab active" data-kind="games" type="button">Games</button><button class="tab" data-kind="articles" type="button">Articles</button></div><div class="actions"><span class="status" id="signedInAs"></span><button class="button secondary" id="signOut" type="button">Sign out</button></div></div>
+      <div class="grid-layout">
+        <section class="panel"><h2 id="formHeading">Add a game</h2>
+          <form id="recordForm">
+            <input type="hidden" name="id">
+            <div class="grid" id="gameFields">
+              <div class="field"><label for="name">Game name *</label><input id="name" name="name" maxlength="60" required></div>
+              <div class="field"><label for="genre">Genre</label><input id="genre" name="genre" maxlength="40"></div>
+              <div class="field"><label for="platform">Platform</label><input id="platform" name="platform" maxlength="60" placeholder="PC · Windows"></div>
+              <div class="field"><label for="symbol">Card symbol</label><input id="symbol" name="symbol" maxlength="8" placeholder="✦"></div>
+              <div class="field wide"><label for="description">Description</label><textarea id="description" name="description" maxlength="500"></textarea></div>
+              <div class="field"><label for="colors">Card colors</label><input id="colors" name="colors" placeholder="#ff8a5b, #7a3ef2, #1c1d2d"></div>
+              <div class="field"><label for="download_label">Download button label</label><input id="download_label" name="download_label" maxlength="40" placeholder="Download game"></div>
+              <div class="field wide"><label for="download_url">Download URL</label><input id="download_url" name="download_url" type="url" placeholder="https://..."></div>
+            </div>
+            <div class="grid hidden" id="articleFields">
+              <div class="field wide"><label for="title">Article title *</label><input id="title" name="title" maxlength="100" required></div>
+              <div class="field"><label for="game">Related game</label><input id="game" name="game" maxlength="60"></div>
+              <div class="field"><label for="author">Author</label><input id="author" name="author" maxlength="60" value="ActionGames team"></div>
+              <div class="field wide"><label for="excerpt">Short summary</label><textarea id="excerpt" name="excerpt" maxlength="240"></textarea></div>
+              <div class="field wide"><label for="body">Article</label><textarea id="body" name="body" maxlength="12000"></textarea></div>
+              <div class="field"><label for="published_at">Publication date</label><input id="published_at" name="published_at" type="date"></div>
+            </div>
+            <div class="actions"><button class="button" id="saveButton" type="submit">Save game</button><button class="button secondary hidden" id="cancelEdit" type="button">Cancel edit</button></div>
+          </form>
+        </section>
+        <section class="panel"><div class="toolbar"><h2 id="listHeading">Games</h2><button class="button secondary" id="refresh" type="button">Refresh</button></div><div id="records" aria-live="polite"><p class="empty">Sign in to load content.</p></div><div class="notice hidden" id="appMessage" role="status"></div></section>
+      </div>
+    </section>
+  </main>
+  <footer class="shell">ActionGames admin · Keep your Supabase service-role key private; this page uses only the public anon key.</footer>
+<script>
+  // Replace these with the Project URL and anon/public key from Supabase Settings → API.
+  const SUPABASE_URL = 'https://YOUR_PROJECT_ID.supabase.co';
+  const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+  const configured = !SUPABASE_URL.includes('YOUR_PROJECT_ID') && !SUPABASE_ANON_KEY.includes('YOUR_SUPABASE_ANON_KEY');
+  const client = configured && window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+  const state = { kind: 'games', records: [] };
+  const $ = (id) => document.getElementById(id);
+  const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  function message(text, error=false, login=false) { const el=$(login?'loginMessage':'appMessage'); el.textContent=text; el.classList.remove('hidden','error'); if(error)el.classList.add('error'); }
+  function setKind(kind) {
+    state.kind=kind;
+    document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.kind===kind));
+    $('gameFields').classList.toggle('hidden',kind!=='games'); $('articleFields').classList.toggle('hidden',kind!=='articles');
+    $('listHeading').textContent=kind==='games'?'Games':'Articles'; resetForm(); loadRecords();
+  }
+  function resetForm() { $('recordForm').reset(); $('recordForm').elements.id.value=''; $('formHeading').textContent=state.kind==='games'?'Add a game':'Add an article'; $('saveButton').textContent=state.kind==='games'?'Save game':'Save article'; $('cancelEdit').classList.add('hidden'); }
+  async function loadRecords() {
+    $('records').innerHTML='<p class="empty">Loading…</p>';
+    const {data,error}=await client.from(state.kind).select('*').order(state.kind==='games'?'name':'published_at',{ascending:state.kind==='games'});
+    if(error){$('records').innerHTML='';message(error.message,true);return}
+    state.records=data||[];
+    $('records').innerHTML=state.records.length?state.records.map(r=>`<div class="record"><div><strong>${escapeHtml(state.kind==='games'?r.name:r.title)}</strong><small>${escapeHtml(state.kind==='games'?(r.genre||'Game'):(r.game||r.author||'Article'))}</small></div><div class="record-actions"><button class="button secondary" type="button" data-edit="${escapeHtml(r.id)}">Edit</button><button class="button danger" type="button" data-delete="${escapeHtml(r.id)}">Delete</button></div></div>`).join(''):'<p class="empty">No records yet. Add one using the form.</p>';
+  }
+  $('loginForm').addEventListener('submit',async e=>{e.preventDefault();if(!client){message('Configure SUPABASE_URL and SUPABASE_ANON_KEY in admin.html first.',true,true);return}const f=new FormData(e.currentTarget);message('Signing in…');const {error}=await client.auth.signInWithPassword({email:f.get('email'),password:f.get('password')});if(error){message(error.message,true,true);return}await showDashboard()});
+  async function showDashboard(){const {data:{user}}=await client.auth.getUser();if(!user)return;$('loginPanel').classList.add('hidden');$('dashboard').classList.remove('hidden');$('signedInAs').textContent=user.email||'Signed in';loadRecords()}
+  $('signOut').addEventListener('click',async()=>{await client.auth.signOut();$('dashboard').classList.add('hidden');$('loginPanel').classList.remove('hidden');$('loginForm').reset()});
+  document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>setKind(b.dataset.kind)));
+  $('refresh').addEventListener('click',loadRecords); $('cancelEdit').addEventListener('click',resetForm);
+  $('records').addEventListener('click',async e=>{const edit=e.target.closest('[data-edit]');const del=e.target.closest('[data-delete]');if(edit){const r=state.records.find(x=>String(x.id)===edit.dataset.edit);if(!r)return;resetForm();Object.entries(r).forEach(([k,v])=>{if($(k)&&k!=='id')$('recordForm').elements[k].value=v??''});$('recordForm').elements.id.value=r.id;$('formHeading').textContent=`Edit ${state.kind==='games'?'game':'article'}`;$('saveButton').textContent='Update';$('cancelEdit').classList.remove('hidden');window.scrollTo({top:0,behavior:'smooth'})}else if(del&&confirm('Delete this record? This cannot be undone.')){const {error}=await client.from(state.kind).delete().eq('id',del.dataset.delete);if(error)message(error.message,true);else{message('Record deleted.');loadRecords()}}});
+  $('recordForm').addEventListener('submit',async e=>{e.preventDefault();const form=new FormData(e.currentTarget);const id=form.get('id');const fields=state.kind==='games'?['name','genre','platform','description','symbol','colors','download_url','download_label']:['title','game','author','excerpt','body','published_at'];const row={};fields.forEach(key=>row[key]=String(form.get(key)||'').trim()||null);if(state.kind==='articles'&&!row.published_at)row.published_at=new Date().toISOString().slice(0,10);const request=id?client.from(state.kind).update(row).eq('id',id):client.from(state.kind).insert(row);const {error}=await request;if(error){message(error.message,true);return}message(id?'Changes saved.':'Record added.');resetForm();loadRecords()});
+  if(client){client.auth.getSession().then(({data})=>{if(data.session)showDashboard()});client.auth.onAuthStateChange((_event,session)=>{if(!session){$('dashboard').classList.add('hidden');$('loginPanel').classList.remove('hidden')}})}
+</script>
+</body>
+</html>
