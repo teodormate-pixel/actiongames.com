@@ -34,7 +34,7 @@ drop policy if exists "Public can read games" on public.games;
 create policy "Public can read games" on public.games for select to anon, authenticated using (true);
 drop policy if exists "Admin manages games" on public.games;
 create policy "Admin manages games" on public.games for all to authenticated
-  using ((auth.jwt() ->> 'email') = 'teodor.mate@gamil.com')
+  using ((auth.jwt() ->> 'email') = 'teodor.mate@gmail.com')
   with check ((auth.jwt() ->> 'email') = 'teodor.mate@gmail.com');
 
 drop policy if exists "Public can read articles" on public.articles;
